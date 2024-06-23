@@ -1,0 +1,689 @@
+
+
+class HelloWorld : public cocos2d::Scene
+{
+public:
+    static cocos2d::Scene* createScene();
+    static cocos2d::Scene* createSceneWithIsPlay(bool isPlay);
+    virtual bool init();
+    CREATE_FUNC(HelloWorld);
+};
+
+class gameEnd: public cocos2d::Scene
+{
+public:
+    static cocos2d::Scene* createSceneWithScore(int score);
+    static cocos2d::Scene* createSceneWithScoreAndIsPlay(int score,bool isPlay);
+    virtual bool init();
+    CREATE_FUNC(gameEnd);
+    
+};
+
+class gameScene1:cocos2d::Scene{
+public:
+    static cocos2d::Scene* createScene();
+    static cocos2d::Scene* createSceneWithIsPlay(bool isPlay);
+    virtual void update(float dt);
+    virtual bool init();
+    int score;
+    int life;
+    void updatelife();
+    void enermy(float dt);
+    CREATE_FUNC(gameScene1);
+};
+
+class settings: public cocos2d::Scene
+{
+public:
+    static cocos2d::Scene* createScene();
+    virtual bool init();
+    CREATE_FUNC(settings);
+    
+};
+
+class helpMe: public cocos2d::Scene
+{
+public:
+    static cocos2d::Scene* createScene();
+    virtual bool init();
+    CREATE_FUNC(helpMe);
+};
+
+Scene* HelloWorld::createScene()
+{
+    return HelloWorld::create();
+}
+bool isPlay_set = true;
+Scene* HelloWorld::createSceneWithIsPlay(bool isPlay)
+{
+    isPlay_set = isPlay;
+    return HelloWorld::create();
+}
+
+
+bool HelloWorld::init()
+{
+ 
+    auto bg = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile.png");
+    bg->setPosition(180,320);
+    this->addChild(bg);
+    auto start = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Artboard.png");
+    start->setPosition(180,350);
+    this->addChild(start);
+    auto setting = Sprite::create("/Users/eathoublu/Desktop/game/Artboard.png");
+    setting->setPosition(180,250);
+    this->addChild(setting);
+    auto help = Sprite::create("/Users/eathoublu/Desktop/game/Artboard的副本 2.png");
+    help->setPosition(180,160);
+    this->addChild(help);
+//    ActionInterval* jumpBy = JumpBy ::create(3, ccp(0, 0), 20, 4 );
+//    RepeatForever* repeatforeverAction=RepeatForever::create(jumpBy);
+//   
+    
+    help->runAction(RepeatForever::create( JumpBy ::create(5, ccp(0, 0), 10, 4 )));
+    start->runAction(RepeatForever::create( JumpBy ::create(2, ccp(0, 0), 15, 4 )));
+    setting->runAction(RepeatForever::create( JumpBy ::create(4, ccp(0, 0), 10, 4 )));
+    if(isPlay_set){
+    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("/Users/eathoublu/Music/酷狗音乐/BQ/三輪学 - -遠い空へ- (ヨスガノソラ メインテーマ).mp3", true);
+    }
+    auto listener = EventListenerTouchOneByOne::create();
+    
+    listener->onTouchBegan=[start,setting,help](Touch *t,Event *e){
+        if(start->getBoundingBox().containsPoint(t->getLocation())){
+            CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+            Director::getInstance()->replaceScene(TransitionFade::create(0.5, gameScene1::createSceneWithIsPlay(isPlay_set), Color3B(0,0,0)));
+        }
+        
+        ///
+//        if(setting->getBoundingBox().containsPoint(t->getLocation())){
+//            Director::getInstance()->replaceScene(TransitionFade::create(0.5, settings::createScene(), Color3B(0,0,0)));
+//        }
+//        if(help->getBoundingBox().containsPoint(t->getLocation())){
+//            Director::getInstance()->replaceScene(TransitionFade::create(0.5, helpMe::createScene(), Color3B(0,0,0)));
+//        }
+        
+        ///
+    
+        //TransitionFade::create(0.5, settings::createScene(), Color3B(0,0,0))
+        return true;
+    };
+    
+    
+    
+    
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener,start);
+    
+    
+    
+    
+    
+    
+    
+    return true;
+}
+
+
+
+
+bool isPlay_End = true;
+int score = 0;
+//class gameEnd: public cocos2d::Scene
+//{
+//public:
+//    static cocos2d::Scene* createSceneWithScore(int score);
+//    virtual bool init();
+//    CREATE_FUNC(gameEnd);
+//    
+//};
+//
+cocos2d::Scene* gameEnd::createSceneWithScore(int endScore)
+{
+    score=endScore;
+    auto scene = cocos2d::Scene::create();
+    auto layer = gameEnd::create();
+    scene->addChild(layer);
+    printf("%d",score);
+    return scene;
+}
+
+cocos2d::Scene* gameEnd::createSceneWithScoreAndIsPlay(int endScore,bool isPlay_Set)
+{
+    isPlay_End = isPlay_Set;
+    score=endScore;
+    auto scene = cocos2d::Scene::create();
+    auto layer = gameEnd::create();
+    scene->addChild(layer);
+    printf("%d",score);
+    return scene;
+}
+
+
+bool gameEnd::init(){
+    //  virtual Data getDataFromFile(const std::string& filename);          //数据.     返回: data
+ //   virtual std::string getStringFromFile(const std::string& filename);
+    // virtual bool writeStringToFile(const std::string& dataStr, const std::string& fullPath);
+    if(isPlay_End){
+        
+        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("/Users/eathoublu/Music/酷狗音乐/BQ/三輪学 - -遠い空へ- (ヨスガノソラ メインテーマ).mp3", true);
+        
+        
+    }
+    String historyHighScore = FileUtils::getInstance()->getStringFromFile("/Users/eathoublu/Desktop/未命名 2.txt");
+    
+ //  auto b1 = LabelTTF::create(historyHighScore.getCString(), "courier", 100);//一定要用.getCstring方法
+ //  b1->setPosition(100,200);
+ //  this->addChild(b1,10);//文件读写实验成功！
+   // const char *x_1 = x.getCString();//不需要使用这个就可以
+    int score_high = atoi(historyHighScore.getCString()) ;//这样就可以啦 字符串转换为整型
+  //  printf("*** %d ***",score_high);//成功啦！！！
+    
+    
+    if(score>score_high){
+        
+        
+        //本次得分比上次的要高，create最高分，恭喜画面
+        
+        
+        auto cong = Sprite::create("/Users/eathoublu/Desktop/Mobile 16.png");
+        
+        
+       // auto b2 = LabelTTF::create("哇，最高分耶！！", "courier", 100);
+        cong->setPosition(180,200);
+        this->addChild(cong,10);
+        cong->runAction(RepeatForever::create( JumpBy ::create(3, ccp(0, 0), 10, 4 )));
+         __String * score_S = __String::createWithFormat("%d",score);//将整型转换为字符串
+        FileUtils::getInstance()->writeStringToFile(score_S->getCString(), "/Users/eathoublu/Desktop/未命名 2.txt");//成功！！！！
+        
+        
+        
+    }
+    
+    if(score==score_high){
+        
+        //本次得分与历史最高分平齐
+        
+        auto cong_Eq = Sprite::create("/Users/eathoublu/Desktop/Mobile 18.png");
+        cong_Eq->setPosition(180,200);
+        this->addChild(cong_Eq,10);
+        cong_Eq->runAction(RepeatForever::create( JumpBy ::create(3, ccp(0, 0), 10, 4 )));
+        
+        
+        
+        
+    }
+    
+    if(score<score_high){
+        
+        //本次没有达到历史最高分
+        
+        auto b4 = LabelTTF::create(historyHighScore.getCString(), "courier", 50);
+        b4->setPosition(100,200);
+        this->addChild(b4,100);
+        
+    }
+    
+    
+    
+    
+    
+    //以上是背景音乐初始化以及分数模块的初始化
+    
+    
+//   
+    auto bg = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile8.png");
+    bg->setPosition(180,320);
+    this->addChild(bg);
+    
+    auto reGame = Sprite::create("/Users/eathoublu/Desktop/game/Mobile4 3的副本 2.png");
+    reGame->setPosition(100,330);
+    reGame->runAction(RepeatForever::create( JumpBy ::create(5, ccp(0, 0), 10, 4 )));
+    this->addChild(reGame);
+    
+    auto toHome = Sprite::create("/Users/eathoublu/Desktop/Mobile 19.png");
+    toHome->setPosition(260,330);
+    toHome->runAction(RepeatForever::create( JumpBy ::create(5, ccp(0, 0), 10, 4 )));
+    this->addChild(toHome);
+    
+    auto shareWechat = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile 18.png");
+    shareWechat->setPosition(180,60);
+    this->addChild(shareWechat);
+//
+//    auto shareSina = Sprite::create("");
+//    shareSina->setPosition(0,0);
+//    this->addChild(shareSina);
+//    
+//    auto sharePY = Sprite::create("");
+//    sharePY->setPosition(0,0);
+//    this->addChild(sharePY);
+//    
+//    
+//    //need to add imageURL...
+//    
+//    
+//    
+    
+    __String * scoreS = __String::createWithFormat("%d",score);
+    auto scoreL = LabelTTF::create(scoreS->getCString(), "courier", 100);
+    scoreL->setPosition(180,450);
+    this->addChild(scoreL,100);
+    
+    
+//
+    auto listener = EventListenerTouchOneByOne::create();
+    
+    listener->onTouchBegan=[reGame,toHome](Touch *t,Event *e){
+        
+        if(reGame->getBoundingBox().containsPoint(t->getLocation())){
+            CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+        Director::getInstance()->replaceScene(TransitionFade::create(0.5, gameScene1::createScene(), Color3B(0,0,0)));
+        }
+        if(toHome->getBoundingBox().containsPoint(t->getLocation())){
+            CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+            Director::getInstance()->replaceScene(TransitionFade::create(0.5, HelloWorld::createScene(), Color3B(0,0,0)));
+        }
+        
+        
+        //TransitionFade::create(0.5, HelloWorld::createScene(), Color3B(0,0,0))
+        
+        //add code here...
+      
+        
+        
+    
+        
+        return true;
+    };
+    
+    
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener,reGame);
+    
+    
+
+
+    return true;
+}
+
+
+
+int shareNumber;
+cocos2d::Scene* gameScene1::createScene()
+{
+    auto scene = cocos2d::Scene::create();
+     auto layer = gameScene1::create();
+    scene->addChild(layer);
+    return scene;
+}
+
+cocos2d::Scene* gameScene1::createSceneWithIsPlay(bool isPlay_Set)
+{
+    isPlay = isPlay_Set;
+    auto scene = cocos2d::Scene::create();
+    auto layer = gameScene1::create();
+    scene->addChild(layer);
+    return scene;
+}
+
+bool gameScene1::init(){
+    
+    String historyHighScore = FileUtils::getInstance()->getStringFromFile("/Users/eathoublu/Desktop/未命名 2.txt");
+    
+    auto b4 = LabelTTF::create(historyHighScore.getCString(), "courier", 50);
+    b4->setPosition(180,600);
+    this->addChild(b4,100);
+    
+    //完成历史最高分加载
+    
+    String shareNumber_S = FileUtils::getInstance()->getStringFromFile("/Users/eathoublu/Desktop/未命名 3.txt");
+    shareNumber = atoi(shareNumber_S.getCString()) ;
+    printf("%d***",shareNumber);
+    
+    
+    if(isPlay){
+        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("/Users/eathoublu/Desktop/gameBG.mov", true);}
+    score = 1;
+    life = 6;
+    
+    printf("***|*%d*|**",life+shareNumber*0.5);
+    schedule(schedule_selector(gameScene1::enermy),0.5f);
+    
+  //  schedule(schedule_selector(gameScene1::updatescore),1.0f);
+    
+    updatelife();
+    auto bg = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile5.png");
+    bg->setPosition(180,320);
+    this->addChild(bg);
+    auto player = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile4.png");
+    player->setPosition(180,100);
+    this->addChild(player);
+    player->setTag(1);
+    player->runAction(RepeatForever::create( JumpBy ::create(6, ccp(0, 0), 5, 4 )));
+    
+    
+//    auto up = Sprite::create("/Users/eathoublu/Desktop/game/Mobile7 4.png");
+//    up->setPosition(80,120);
+//    this->addChild(up);
+    
+    auto left = Sprite::create("/Users/eathoublu/Desktop/game/Mobile7 2.png");
+    left->setPosition(50,80);
+    this->addChild(left);
+    
+    auto right = Sprite::create("/Users/eathoublu/Desktop/game/Mobile7 5.png");
+    right->setPosition(110,80);
+    this->addChild(right);
+    
+    auto listener = EventListenerTouchOneByOne::create();
+    
+    listener->onTouchBegan=[left,player,right](Touch *t,Event *e){
+      //  if(up->getBoundingBox().containsPoint(t->getLocation())){
+         //   player->stopAllActions();
+         //   player->runAction(CCMoveBy::create(50,ccp(0,10000)));
+          //   player->setTag(1);
+            
+            
+       // }
+        if(left->getBoundingBox().containsPoint(t->getLocation())){
+            player->stopAllActions();
+            player->runAction(CCMoveBy::create(50,ccp(-10000,0)));
+             player->setTag(1);
+        }
+        
+        if(right->getBoundingBox().containsPoint(t->getLocation())){
+            player->stopAllActions();
+            player->runAction(CCMoveBy::create(50,ccp(10000,0)));
+            player->setTag(1);
+        }
+        
+        
+        return true;
+    };
+    
+    
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener,right);
+    
+    
+    
+    scheduleUpdate();
+    
+    
+    return true;
+}
+void gameScene1::update(float dt){
+    
+    auto player = getChildByTag(1);
+    player->setPosition(player->getPosition());
+    auto enermy = getChildByTag(2);
+    if(enermy){//用if可以判断获取对象是否为空，为空则返回false，该结构体可以起到销毁，回收精灵的作用。
+    enermy->setPosition(enermy->getPosition());
+    
+    if(enermy->getPosition().y<20){
+        enermy->removeFromParent();
+    }
+if(enermy){
+    if(player->getBoundingBox().containsPoint(enermy->getPosition())){
+        player->stopAllActions();
+        if(isPlay){
+            CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("/Users/eathoublu/Desktop/musicEffect_Kill.mov", false, 1.0f, 1.0f, 1.0f);}
+        player->runAction(RepeatForever::create( JumpBy ::create(6, ccp(0, 0), 5, 4 )));
+        player->setPosition(180,100);
+        player->runAction(Blink::create(0.2f, 1));
+        enermy->removeFromParent();
+        updatelife();
+    }
+        }
+    }
+    
+    
+    
+    
+    
+    auto star = getChildByTag(6);
+    if(star){//用if可以判断获取对象是否为空，为空则返回false，该结构体可以起到销毁，回收精灵的作用。
+        star->setPosition(star->getPosition());
+        
+        if(star->getPosition().y<20){
+            star->removeFromParent();
+        }
+        if(star){
+            if(player->getBoundingBox().containsPoint(star->getPosition())){
+              //  player->stopAllActions();
+                if(isPlay){
+                    CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("/Users/eathoublu/Desktop/musicEffect_Kill.mov", false, 1.0f, 1.0f, 1.0f);}
+             //   player->runAction(RepeatForever::create( JumpBy ::create(6, ccp(0, 0), 5, 4 )));
+              //  player->setPosition(180,100);
+              //  player->runAction(Blink::create(0.2f, 1));
+                score += 5 ;
+                star->removeFromParent();
+                updatelife();
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    auto lifeBall = getChildByTag(7);
+    if(lifeBall){//用if可以判断获取对象是否为空，为空则返回false，该结构体可以起到销毁，回收精灵的作用。
+        lifeBall->setPosition(lifeBall->getPosition());
+        
+        if(lifeBall->getPosition().y<20){
+            lifeBall->removeFromParent();
+        }
+        if(lifeBall){
+            if(player->getBoundingBox().containsPoint(lifeBall->getPosition())){
+            //    player->stopAllActions();
+                if(isPlay){
+                    CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("/Users/eathoublu/Desktop/musicEffect_Kill.mov", false, 1.0f, 1.0f, 1.0f);}
+                //   player->runAction(RepeatForever::create( JumpBy ::create(6, ccp(0, 0), 5, 4 )));
+                //  player->setPosition(180,100);
+                //  player->runAction(Blink::create(0.2f, 1));
+                life += shareNumber*0.5+1 ;
+                lifeBall->removeFromParent();
+                updatelife();
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    if(player->getPosition().x<=10||player->getPosition().x>=350||player->getPosition().y>=630||player->getPosition().y<=0){
+        player->stopAllActions();//如果判别位置反过来会出错，我也不知道为什么
+         player->runAction(RepeatForever::create( JumpBy ::create(6, ccp(0, 0), 5, 4 )));
+        player->setPosition(180,100);
+    }
+    
+}
+
+void gameScene1::enermy(float dt){//该回调函数可以产生enermy
+    
+    if(true){
+    auto enermy = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile3.png");
+    enermy->setPosition(CCRANDOM_0_1()*300+20,600);
+    this->addChild(enermy);
+    enermy->setTag(2);
+    
+    enermy->runAction(CCMoveBy::create(50,ccp(0,-10000)));
+    enermy->setTag(2);
+    
+    }
+    //5是一个参数，可以根据用户行为进行调整 分数越高，出现几率越高
+    if(CCRANDOM_0_1()*100<(shareNumber+score*0.1)&&score>(100-shareNumber*20)){
+        
+        
+        if(CCRANDOM_0_1()*100>50){
+    auto star = Sprite::create("/Users/eathoublu/Desktop/Mobile 20.png");
+    star->setPosition(CCRANDOM_0_1()*300+20,600);
+    this->addChild(star);
+    star->setTag(6);
+    
+            star->runAction(CCMoveBy::create(50,ccp(0,-10000)));
+        }else{
+            
+            auto lifeBall = Sprite::create("/Users/eathoublu/Desktop/game/Mobile17.png");
+            lifeBall->setPosition(CCRANDOM_0_1()*300+20,600);
+            this->addChild(lifeBall);
+            lifeBall->setTag(7);
+            lifeBall->runAction(CCMoveBy::create(50,ccp(0,-10000)));
+            
+            
+        }
+   // star->setTag(3);
+    }
+    
+    
+    
+    this->score++;
+    Node * n2 = this->getChildByTag(4);
+    if(n2){
+        this->removeChildByTag(4);
+    }
+    if(this->score<0){
+        score=0;
+    }
+    if(score == 0){
+        Director::getInstance()->replaceScene(HelloWorld::createScene());
+    }//这里怎么会有这么傻逼的一句话
+    __String * scoreS = __String::createWithFormat("%d",score);
+    auto score1 = LabelTTF::create(scoreS->getCString(), "courier", 30);
+    score1->setPosition(100,580);
+    this->addChild(score1,100,4);
+    
+
+    
+    
+
+}
+
+void gameScene1::updatelife(){
+    this->life--;
+    Node * n = this->getChildByTag(3);
+    if(n){
+        this->removeChildByTag(3);
+    }
+    if(this->life<0){
+        life=0;
+    }
+    if(life == 0){
+        CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+        Director::getInstance()->replaceScene(TransitionFade::create(0.5, gameEnd::createSceneWithScoreAndIsPlay(this->score,isPlay), Color3B(0,0,0)));
+    }
+    __String * lifeS = __String::createWithFormat("%d",life);
+    auto life1 = LabelTTF::create(lifeS->getCString(), "courier", 100);
+    life1->setPosition(300,80);
+    this->addChild(life1,100,3);
+    
+}
+
+
+cocos2d::Scene* settings::createScene()
+{
+    auto scene = cocos2d::Scene::create();
+    auto layer = settings::create();
+    scene->addChild(layer);
+    return scene;
+}
+
+bool settings::init(){
+    
+    auto bg = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile setting.png");
+    bg->setPosition(180,320);
+    this->addChild(bg,1);
+//    
+    auto openMusic = Sprite::create("/Users/eathoublu/Desktop/game/Mobile 12.png");
+    openMusic->setPosition(210,300);
+    openMusic->runAction(RepeatForever::create( JumpBy ::create(5, ccp(0, 0), 10, 4 )));
+    this->addChild(openMusic,10);
+    
+    auto closeMusic = Sprite::create("/Users/eathoublu/Desktop/game/Mobile 11.png");
+    closeMusic->setPosition(210,190);
+    closeMusic->runAction(RepeatForever::create( JumpBy ::create(5, ccp(0, 0), 10, 4 )));
+    this->addChild(closeMusic,10);
+    
+    auto back = Sprite::create("/Users/eathoublu/Desktop/game/Mobile 13.png");
+    back ->setPosition(180,120);
+    back->runAction(RepeatForever::create( JumpBy ::create(5, ccp(0, 0), 10, 4 )));
+    this->addChild(back,10);
+    
+    
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->onTouchBegan=[back,closeMusic,openMusic](Touch *t,Event *e){
+        if(back->getBoundingBox().containsPoint(t->getLocation())){
+            
+            Director::getInstance()->replaceScene(TransitionFade::create(0.5, HelloWorld::createSceneWithIsPlay(isPlay), Color3B(0,0,0)));
+            
+            //TransitionFade::create(0.5, HelloWorld::createSceneWithIsPlay(isPlay), Color3B(0,0,0))
+            
+        }
+        if(closeMusic->getBoundingBox().containsPoint(t->getLocation())){
+            
+            CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+            isPlay = false;
+            
+        }
+        if(openMusic->getBoundingBox().containsPoint(t->getLocation())){
+            
+             CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("/Users/eathoublu/Music/酷狗音乐/BQ/三輪学 - -遠い空へ- (ヨスガノソラ メインテーマ).mp3", true);
+            isPlay = true;
+            
+            
+        }
+        
+        
+        
+        
+        return true;
+    };
+    
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener,back);
+    
+    
+    return true;
+}
+
+
+cocos2d::Scene* helpMe::createScene()
+{
+    auto scene = cocos2d::Scene::create();
+    auto layer = helpMe::create();
+    scene->addChild(layer);
+    return scene;
+}
+
+bool helpMe::init() {
+    
+    auto bg = Sprite::create("/Users/eathoublu/Desktop/game/云里的夏天/Mobile 15.png");
+    bg->setPosition(180,320);
+    this->addChild(bg);
+    
+    auto back = Sprite::create("/Users/eathoublu/Desktop/game/Mobile 17.png");
+    back -> setPosition(180,100);
+    this->addChild(back);
+    back->runAction(RepeatForever::create( JumpBy ::create(4, ccp(0, 0), 10, 4 )));
+    
+    auto listener = EventListenerTouchOneByOne::create();
+    
+    listener->onTouchBegan=[back](Touch *t ,Event *e){
+
+        if(back->getBoundingBox().containsPoint(t->getLocation())){
+            
+            Director::getInstance()->replaceScene(TransitionFade::create(0.5, HelloWorld::createScene(), Color3B(0,0,0)));
+            
+        }
+        
+        
+        //
+        
+        
+        
+        return true;
+    };
+    
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, back);
+    
+    return true;
+}
+
